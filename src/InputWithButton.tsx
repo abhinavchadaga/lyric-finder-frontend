@@ -12,11 +12,11 @@ interface InputWithButtonProps extends TextInputProps {
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export function InputWithButton({
+const InputWithButton: React.FC<InputWithButtonProps> = ({
   searchForLyric,
   setInputValue,
   ...props
-}: InputWithButtonProps) {
+}: InputWithButtonProps) => {
   const theme = useMantineTheme();
 
   const { value: inputValue } = props;
@@ -63,4 +63,6 @@ export function InputWithButton({
       {...props}
     />
   );
-}
+};
+
+export default InputWithButton;

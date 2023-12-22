@@ -9,7 +9,7 @@ import {
 } from "@mantine/core";
 import { IconClearAll } from "@tabler/icons-react";
 import { useState } from "react";
-import { InputWithButton } from "./InputWithButton";
+import InputWithButton from "./InputWithButton";
 import SongCard, { Song } from "./SongCard";
 
 const PAGE_SIZE = 6;
