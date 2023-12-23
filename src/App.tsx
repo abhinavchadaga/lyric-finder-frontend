@@ -3,12 +3,14 @@ import {
   Center,
   Container,
   Grid,
+  Pagination,
   Stack,
   Title,
   useMantineTheme,
 } from "@mantine/core";
+import { usePagination } from "@mantine/hooks";
 import { IconClearAll } from "@tabler/icons-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import InputWithButton from "./InputWithButton";
 import SongCard, { Song } from "./SongCard";
 
@@ -19,6 +21,11 @@ const App: React.FC = () => {
   const [results, setResults] = useState<Song[] | null>(null);
   const [inputValue, setInputValue] = useState("");
   const isResultsEmpty = results === null || results.length === 0;
+  const totalPages = useRef<number>(0);
+  const pagination = usePagination({
+    total: totalPages.current,
+    initialPage: 1,
+  });
 
   const searchForLyric = async (lyric: string, pageNumber: number = 1) => {
     fetch("http://localhost:8000/query", {
@@ -33,8 +40,10 @@ const App: React.FC = () => {
       }),
     })
       .then((res) => res.json())
-      .then((data: { songs: Song[] }) => {
-        const { songs } = data;
+      .then((data: { songs: Song[]; total_pages: number }) => {
+        const { songs, total_pages } = data;
+        totalPages.current = total_pages;
+        console.log(`total pages: ${totalPages}`);
         setResults(songs);
       })
       .catch((err) => {
@@ -63,22 +72,41 @@ const App: React.FC = () => {
         <Stack p={"md"} h={"50vh"}>
           <Grid align="stretch">
             {results?.map((song: Song) => (
-              <Grid.Col span={4}>
+              <Grid.Col
+                span={4}
+                key={`${song.title}-${song.album}-${song.artist}`}
+              >
                 <SongCard song={song} style={{ height: "100%" }} />
               </Grid.Col>
             ))}
           </Grid>
           {!isResultsEmpty && (
-            <Center>
+            <div style={{ position: "relative" }}>
+              <Center>
+                <Pagination
+                  total={totalPages.current}
+                  value={pagination.active}
+                  onChange={(value: number) => {
+                    searchForLyric(inputValue, value);
+                    pagination.setPage(value);
+                  }}
+                />
+              </Center>
               <Button
                 color={theme.colors.red[6]}
                 variant="light"
                 onClick={clearResults}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  right: "0",
+                  transform: "translateY(-50%)",
+                }}
                 rightSection={<IconClearAll size={16} />}
               >
                 Clear
               </Button>
-            </Center>
+            </div>
           )}
         </Stack>
       </Container>
