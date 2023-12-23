@@ -10,7 +10,7 @@ import {
 } from "@mantine/core";
 import { usePagination } from "@mantine/hooks";
 import { IconClearAll } from "@tabler/icons-react";
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import InputWithButton from "./InputWithButton";
 import SongCard, { Song } from "./SongCard";
 

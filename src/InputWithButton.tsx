@@ -6,6 +6,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { IconArrowRight, IconSearch } from "@tabler/icons-react";
+import React from "react";
 
 interface InputWithButtonProps extends TextInputProps {
   searchForLyric: (lyric: string) => void;
