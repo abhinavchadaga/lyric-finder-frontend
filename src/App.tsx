@@ -98,8 +98,8 @@ const App: React.FC = () => {
               </Grid.Col>
             ))}
           </Grid>
-          {!isResultsEmpty && (
-            <div style={{ position: "relative" }}>
+          <div style={{ position: "relative" }}>
+            {!isResultsEmpty && (
               <Center>
                 <Pagination
                   total={responseInfo.current.totalPages}
@@ -110,6 +110,8 @@ const App: React.FC = () => {
                   }}
                 />
               </Center>
+            )}
+            {results !== null && (
               <Button
                 color={theme.colors.red[6]}
                 variant="light"
@@ -124,8 +126,8 @@ const App: React.FC = () => {
               >
                 Clear
               </Button>
-            </div>
-          )}
+            )}
+          </div>
         </Stack>
       </Container>
     </>
