@@ -16,14 +16,22 @@ import SongCard, { Song } from "./SongCard";
 
 const PAGE_SIZE = 6;
 
+interface QueryResponseInfo {
+  numResults: number;
+  totalPages: number;
+}
+
 const App: React.FC = () => {
   const theme = useMantineTheme();
   const [results, setResults] = useState<Song[] | null>(null);
   const [inputValue, setInputValue] = useState("");
   const isResultsEmpty = results === null || results.length === 0;
-  const totalPages = useRef<number>(0);
+  const responseInfo = useRef<QueryResponseInfo>({
+    numResults: 0,
+    totalPages: 0,
+  });
   const pagination = usePagination({
-    total: totalPages.current,
+    total: responseInfo.current.totalPages,
     initialPage: 1,
   });
 
@@ -40,12 +48,16 @@ const App: React.FC = () => {
       }),
     })
       .then((res) => res.json())
-      .then((data: { songs: Song[]; total_pages: number }) => {
-        const { songs, total_pages } = data;
-        totalPages.current = total_pages;
-        console.log(`total pages: ${totalPages}`);
-        setResults(songs);
-      })
+      .then(
+        (data: { songs: Song[]; num_results: number; total_pages: number }) => {
+          const { songs, num_results, total_pages } = data;
+          responseInfo.current = {
+            numResults: num_results,
+            totalPages: total_pages,
+          };
+          setResults(songs);
+        },
+      )
       .catch((err) => {
         console.error(err);
       });
@@ -58,7 +70,7 @@ const App: React.FC = () => {
   return (
     <>
       <Container>
-        <Stack p={"md"} h={"50vh"} justify={"flex-end"} gap={"xl"}>
+        <Stack h={"50vh"} justify={"flex-end"} gap={"xl"}>
           <Center>
             <Title>Lyric Finder</Title>
           </Center>
@@ -70,6 +82,12 @@ const App: React.FC = () => {
           />
         </Stack>
         <Stack p={"md"} h={"50vh"}>
+          {results !== null && (
+            <Title style={{ textAlign: "center" }} order={3}>
+              Found {responseInfo.current.numResults} results
+              {responseInfo.current.numResults === 0 && ":("}
+            </Title>
+          )}
           <Grid align="stretch">
             {results?.map((song: Song) => (
               <Grid.Col
@@ -84,7 +102,7 @@ const App: React.FC = () => {
             <div style={{ position: "relative" }}>
               <Center>
                 <Pagination
-                  total={totalPages.current}
+                  total={responseInfo.current.totalPages}
                   value={pagination.active}
                   onChange={(value: number) => {
                     searchForLyric(inputValue, value);
